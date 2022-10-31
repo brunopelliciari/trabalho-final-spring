@@ -158,7 +158,7 @@ public class LocacaoService {
             Duration d2 = Duration.between(locacao.getDataLocacao().atStartOfDay(), locacao.getDataDevolucao().atStartOfDay());
             locacao.setValorLocacao(d2.toDays() * locacao.getVeiculo().getValorLocacao());
 
-            return converterEmDTO(locacao);
+            return converterEmDTOCompleto(locacao);
         } catch (BancoDeDadosException e) {
             throw new RegraDeNegocioException("Erro ao instanciar locação.");
         }
@@ -166,6 +166,15 @@ public class LocacaoService {
 
     public LocacaoDTO converterEmDTO(Locacao locacao) {
         return objectMapper.convertValue(locacao, LocacaoDTO.class);
+    }
+
+    public LocacaoDTO converterEmDTOCompleto(Locacao locacao) {
+        LocacaoDTO dto = objectMapper.convertValue(locacao, LocacaoDTO.class);
+        dto.setCliente(objectMapper.convertValue(locacao.getCliente(), ClienteDTO.class));
+        dto.setCartaoCredito(objectMapper.convertValue(locacao.getCartaoCredito(), CartaoCreditoDTO.class));
+        dto.setFuncionario(objectMapper.convertValue(locacao.getFuncionario(), FuncionarioDTO.class));
+        dto.setVeiculo(objectMapper.convertValue(locacao.getVeiculo(), VeiculoDTO.class));
+        return dto;
     }
 
     public Locacao converterDTOEmLocacao(LocacaoDTO locacaodto) {
